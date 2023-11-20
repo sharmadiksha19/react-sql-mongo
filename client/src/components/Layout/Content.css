@@ -1,0 +1,10 @@
+/* Content.css */
+.content-container {
+    width: 100%;
+    max-width: 1900px; 
+    padding: 20px;
+    box-sizing: border-box;
+    height: 900px;
+    overflow: hidden;
+  }
+  

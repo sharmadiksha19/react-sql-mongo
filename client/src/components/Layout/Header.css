@@ -1,0 +1,85 @@
+/* Header.css */
+header {
+  background-color: #333;
+  color: #fff;
+  font-weight: 400;
+  font-size: large;
+  padding: 20px 0;
+  height: 60px;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+.products {
+  display: flex;
+  margin-right: 20px;
+}
+
+.products > div {
+  cursor: pointer;
+  margin-right: 10px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.products > div:hover {
+  background-color: #555;
+}
+
+.trending {
+  cursor: pointer;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-box {
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+input[type="text"] {
+  padding: 5px;
+}
+
+.userlogin, .vieworder {
+  cursor: pointer;
+  padding: 5px 10px;
+  border-radius: 3px;
+  transition: background-color 0.3s;
+}
+
+.userlogin:hover, .vieworder:hover {
+  background-color: #555;
+}
+
+.cart {
+  cursor: pointer;
+  font-size: 1.5rem;
+  margin-left: 10px;
+}
+
+.cart:hover {
+  color: #555;
+}
