@@ -1,75 +1,97 @@
 const asyncHandler = require("express-async-handler");
-const bcrypt = require("bcrypt");
-const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+const mysql = require("mysql2/promise");
 
-//@desc Register User
-//@route POST /api/register
+const connection = mysql.createPool({
+  host: "localhost",
+  user: "root",
+  password: "root",
+  database: "smarthomesDB",
+});
+
+//@route POST /user/register
 //@access public
-const registerUser = asyncHandler(async (req, res) => {
+const addUser = asyncHandler(async (req, res) => {
   const { username, password, repassword, usertype } = req.body;
+
   if (!username || !password || !repassword || !usertype) {
     res.status(400);
     throw new Error("All fields are Mandatory!");
   }
-  const userAvailable = await User.findOne({ username });
-  if (userAvailable) {
-    res.status(400);
-    throw new Error("User already registered!");
+
+  const [rows] = await connection.execute(
+    "SELECT * FROM user WHERE userName = ?",
+    [username]
+  );
+
+  if (rows.length > 0) {
+    return res.status(400).json({ message: "Already a user!" });
   }
-  //hash password
-  const hashedpassowrd = await bcrypt.hash(password, 10);
-  console.log("Hashed Password:", hashedpassowrd);
-  const user = await User.create({
-    username,
-    password: hashedpassowrd,
-    repassword: hashedpassowrd,
-    usertype,
-  });
-  console.log(`User Created ${user}`);
+
+  const user = await connection.execute(
+    "INSERT INTO user(username,password,repassword,usertype) " +
+      "VALUES (?,?,?,?)",
+    [username, password, repassword, usertype]
+  );
+
   if (user) {
-    res.status(201).json({ _id: user.id, username: user.username });
+    res
+      .status(201)
+      .json({ message: "User with username: " + username + " created." });
   } else {
     res.status(400);
-    throw new Error("User data not valid!");
+    throw new Error("Data invalid!");
   }
   res.json({ message: "Registered the user" });
 });
 
-//@desc Login users
-//@route POST /api/login
+//@route POST user/login
 //@access public
 const loginUser = asyncHandler(async (req, res) => {
-  const { username, password } = req.body;
-  // Check if the username exists
-  if (!username || !password) {
-    res.status(401);
-    throw new Error("All fields are mandatory");
-  }
-  const user = await User.findOne({ username });
-  if (user && (await bcrypt.compare.password, user.password)) {
-    const accessToken = jwt.sign(
-      {
-        user: {
-          username: user.username,
-          id: user.id,
-        },
-      },
-      process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1m" }
+  const { username, password, usertype } = req.body;
+
+  try {
+    const [rows] = await connection.execute(
+      "SELECT * FROM user WHERE username = ?",
+      [username]
     );
-    res.status(200).json({ accessToken });
-  } else {
-    res.status(401);
-    throw new Error("Email password not correct");
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+
+    const user = rows[0];
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: "Invalid username or password" });
+    }
+
+    res.status(200).json({ message: "Login successful", username: username });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-//@desc Current users infor
-//@route POST /api/current
-//@access private
-const currentUser = asyncHandler(async (req, res) => {
-  res.json(req.user.username);
+//@route DELETE /delete/:username
+//@access public
+const removeUser = asyncHandler(async (req, res) => {
+  const username = req.params.username;
+
+  try {
+    const [rows] = await connection.execute(
+      "SELECT * FROM user WHERE username = ?",
+      [username]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Invalid user!" });
+    }
+
+    await connection.execute("DELETE FROM user WHERE username = ?", [username]);
+
+    res.status(200).json({ message: "User deleted!" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
-module.exports = { registerUser, loginUser, currentUser };
+module.exports = { addUser, loginUser, removeUser };

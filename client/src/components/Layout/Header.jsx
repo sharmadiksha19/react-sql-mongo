@@ -1,18 +1,30 @@
 // Header.jsx
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Header.css";
-import { FaCartPlus } from "react-icons/fa";
+import { useUser } from "../User/UserContext";
 
 const Header = () => {
+  const { user, logout } = useUser();
   const navigate = useNavigate();
-
-  const handleLogoutClick = () => {
-    navigate("/dashboard");
-  };
 
   const handleLoginClick = () => {
     navigate("/login");
+  };
+
+  const handleProductClick = () => {
+    navigate("/products");
+  };
+
+  const handleTrendingClick = () => {
+    navigate("/trending");
+  };
+
+  const handlehomeclick = () => {
+    navigate("/");
+  };
+  const handleLogoutClick = () => {
+    navigate("/logout");
   };
 
   return (
@@ -20,26 +32,24 @@ const Header = () => {
       <div className="header-container">
         <div className="header-left">
           <div className="logo">Smart Homes</div>
-          <div className="products">
-            <div className="doorBells">Door Bells</div>
-            <div className="doorLocks">Door Locks</div>
-            <div className="lights">Lights</div>
-            <div className="speakers">Speakers</div>
-            <div className="thermostats">Thermostats</div>
+          <div className="products-list" onClick={handleProductClick}>
+            <Link to="/products">PRODUCTS</Link>
           </div>
-          <div className="trending">Trending</div>
+          <div className="trending" onClick={handleTrendingClick}>
+            <Link to="/trending">TRENDING</Link>
+          </div>
         </div>
         <div className="header-right">
           <div className="search-box">
             <input type="text" placeholder="Search..." />
           </div>
-          <div className="userlogin" onClick={handleLoginClick}>
-            Login
-          </div>
-          <div className="vieworder">View Order</div>
-          <div className="cart">
-            <FaCartPlus />
-          </div>
+        </div>
+        <div className="userlogin">
+          {user ? (
+            <button onClick={handleLogoutClick}>Logout</button>
+          ) : (
+            <button onClick={handleLoginClick}>Login</button>
+          )}
         </div>
       </div>
     </header>

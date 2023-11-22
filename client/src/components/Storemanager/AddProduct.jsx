@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import "./AddProductForm.css"; // Include your CSS file for styling
+import axios from "axios";
+import "./AddProductForm.css";
 
 const AddProduct = () => {
-  const [product, setProduct] = useState({
-    productType: "",
+  const [productDetails, setProductDetails] = useState({
+    ProductType: "",
+    Id: "",
     productName: "",
     productPrice: "",
     productImage: "",
@@ -13,22 +15,37 @@ const AddProduct = () => {
     inventory: "",
   });
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({
-      ...prevProduct,
+    setProductDetails((prevDetails) => ({
+      ...prevDetails,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Product added:", product);
+    console.log(productDetails);
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/products",
+        productDetails
+      );
+      console.log(response.data); // Assuming the API returns a message upon successful creation
+      // You can redirect the user to another page or show a success message here
+      console.log("Product added:", productDetails);
+      // Show alert on successful
+      window.alert("Product Added Successfully!");
+    } catch (error) {
+      console.error("Error creating product:", error.message);
+      // Handle error, show error message to the user, etc.
+    }
   };
 
   return (
     <div className="product-form-container">
       <h2>Add Product</h2>
+
       <form onSubmit={handleSubmit}>
         <table>
           <tbody>
@@ -37,9 +54,20 @@ const AddProduct = () => {
               <td>
                 <input
                   type="text"
-                  name="productType"
-                  value={product.productType}
-                  onChange={handleChange}
+                  name="ProductType"
+                  value={productDetails.ProductType}
+                  onChange={handleInputChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>Product ID:</td>
+              <td>
+                <input
+                  type="text"
+                  name="Id"
+                  value={productDetails.Id}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -49,8 +77,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productName"
-                  value={product.productName}
-                  onChange={handleChange}
+                  value={productDetails.productName}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -60,8 +88,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productPrice"
-                  value={product.productPrice}
-                  onChange={handleChange}
+                  value={productDetails.productPrice}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -71,8 +99,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productImage"
-                  value={product.productImage}
-                  onChange={handleChange}
+                  value={productDetails.productImage}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -82,8 +110,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productManufacturer"
-                  value={product.productManufacturer}
-                  onChange={handleChange}
+                  value={productDetails.productManufacturer}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -93,8 +121,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productCondition"
-                  value={product.productCondition}
-                  onChange={handleChange}
+                  value={productDetails.productCondition}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -104,8 +132,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="productDiscount"
-                  value={product.productDiscount}
-                  onChange={handleChange}
+                  value={productDetails.productDiscount}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>
@@ -115,8 +143,8 @@ const AddProduct = () => {
                 <input
                   type="text"
                   name="inventory"
-                  value={product.inventory}
-                  onChange={handleChange}
+                  value={productDetails.inventory}
+                  onChange={handleInputChange}
                 />
               </td>
             </tr>

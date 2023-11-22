@@ -5,7 +5,7 @@ import UpdateProduct from "./UpdateProduct";
 import "./storemanager.css";
 import DeleteProduct from "./DeleteProduct";
 
-const StoreManager = ({ username }) => {
+const StoreManager = () => {
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [showUpdateProductForm, setShowUpdateProductForm] = useState(false);
   const [showDeleteProductForm, setShowDeleteProductForm] = useState(false);
@@ -30,7 +30,6 @@ const StoreManager = ({ username }) => {
 
   return (
     <div>
-      <div>Welcome, {username}!</div>
       <nav className="navbar">
         <ul>
           <li>

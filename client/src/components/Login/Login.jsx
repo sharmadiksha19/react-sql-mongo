@@ -1,26 +1,40 @@
 // Login.jsx
 import React, { useState } from "react";
-import Axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../User/UserContext";
+import axios from "axios";
 import "./Login.css";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [usertype, setUsertype] = useState("");
+  const { login } = useUser();
+
+  const [userDetails, setuserDetails] = useState({
+    username: "",
+    password: "",
+    usertype: "",
+  });
+
   const navigate = useNavigate();
 
-  const loginuser = (e) => {
-    e.preventDefault();
-    Axios.post("http://localhost:5001/api/login", {
-      username: username,
-      password: password,
-      usertype: usertype,
-    }).then((response) => {
-      console.log(response);
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setuserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
 
-      // Conditionally navigate based on user type
-      switch (usertype) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log(userDetails);
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/user/login",
+        userDetails
+      );
+      console.log(response.data);
+      console.log("User logged:", userDetails);
+      switch (userDetails.usertype) {
         case "customer":
           navigate("/customer");
           break;
@@ -34,22 +48,27 @@ const Login = () => {
           // Redirect to a default route if user type is not recognized
           navigate("/dashboard");
       }
-    });
+      login(response.data);
+
+      // Show alert on successful
+      window.alert("User LoggedIn Successfully!");
+    } catch (error) {
+      console.error("Error logging user:", error.message);
+    }
   };
 
   return (
     <div>
       <div className="login-container">
         <h2>Login</h2>
-        <form className="login-from">
+        <form className="login-from" onSubmit={handleSubmit}>
           <label>
             Username:
             <input
               type="text"
               name="username"
-              onChange={(event) => {
-                setUsername(event.target.value);
-              }}
+              value={userDetails.username}
+              onChange={handleInputChange}
               required
             />
           </label>
@@ -59,32 +78,24 @@ const Login = () => {
             <input
               type="password"
               name="password"
-              onChange={(event) => {
-                setPassword(event.target.value);
-              }}
+              value={userDetails.password}
+              onChange={handleInputChange}
               required
             />
           </label>
           <br />
           <label>
             User Type:
-            <select
-              name="userType"
-              onChange={(event) => {
-                setUsertype(event.target.value);
-              }}
-            >
-              <option value="default">Select</option>
-              <option value="customer">Customer</option>
-              <option value="salesman">Salesman</option>
-              <option value="storemanager">Store Manager</option>
-            </select>
+            <input
+              type="text"
+              name="usertype"
+              value={userDetails.usertype}
+              onChange={handleInputChange}
+            />
           </label>
           <br />
-          <button type="submit" onClick={loginuser}>
-            Login
-          </button>
-          <a href="/"> New user? Register </a>
+          <button type="submit">Login</button>
+          <a href="/register"> New user? Register </a>
         </form>
       </div>
     </div>

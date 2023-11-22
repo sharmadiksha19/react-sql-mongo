@@ -1,38 +1,52 @@
 // Register.jsx
 import React, { useState } from "react";
-import Axios from "axios";
+import axios from "axios";
 import "./Register.css";
 
 const Register = () => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [repassword, setRepassword] = useState("");
-  const [usertype, setUsertype] = useState("");
-  //onClick
-  const createUser = (e) => {
+  const [userDetails, setuserDetails] = useState({
+    username: "",
+    password: "",
+    repassword: "",
+    usertype: "",
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setuserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:5001/api/register", {
-      username: username,
-      password: password,
-      repassword: repassword,
-      usertype: usertype,
-    }).then(() => {
-      console.log("User has been created!");
-    });
+    console.log(userDetails);
+    try {
+      const response = await axios.post(
+        "http://localhost:5001/user/register",
+        userDetails
+      );
+      console.log(response.data);
+      console.log("User added:", userDetails);
+      // Show alert on successful
+      window.alert("User Added Successfully!");
+    } catch (error) {
+      console.error("Error creating user:", error.message);
+    }
   };
 
   return (
     <div className="register-container">
       <h2>Register</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <label>
           Username:
           <input
             type="text"
             name="username"
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
+            value={userDetails.username}
+            onChange={handleInputChange}
             required
           />
         </label>
@@ -42,9 +56,8 @@ const Register = () => {
           <input
             type="password"
             name="password"
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
+            value={userDetails.password}
+            onChange={handleInputChange}
             required
           />
         </label>
@@ -53,32 +66,24 @@ const Register = () => {
           Confirm Password:
           <input
             type="password"
-            name="confirmPassword"
-            onChange={(event) => {
-              setRepassword(event.target.value);
-            }}
+            name="repassword"
+            value={userDetails.repassword}
+            onChange={handleInputChange}
             required
           />
         </label>
         <br />
         <label>
           User Type:
-          <select
-            name="userType"
-            onChange={(event) => {
-              setUsertype(event.target.value);
-            }}
-          >
-            <option value="default">Select</option>
-            <option value="customer">Customer</option>
-            <option value="salesman">Salesman</option>
-            <option value="storemanager">Store Manager</option>
-          </select>
+          <input
+            type="text"
+            name="usertype"
+            value={userDetails.usertype}
+            onChange={handleInputChange}
+          />
         </label>
         <br />
-        <button type="submit" onClick={createUser}>
-          Register
-        </button>
+        <button type="submit">Register</button>
         <a href="/login"> Already user? Login </a>
       </form>
     </div>

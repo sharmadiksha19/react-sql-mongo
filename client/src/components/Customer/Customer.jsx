@@ -1,44 +1,32 @@
-import React, { useEffect, useState } from "react";
-import ProductCard from "../Product/ProductCard";
-import Product from "../Product/Product";
-import Axios from "axios";
+import React from "react";
+import { Link } from "react-router-dom";
+import "./Customer.css";
+import { FaCartPlus } from "react-icons/fa";
+import { useCart } from "../Cart/CartContext";
 
 const Customer = () => {
-  const [bestSellers, setBestSellers] = useState([]);
-  const [product, setProduct] = useState({
-    productType: "",
-    productName: "",
-    productPrice: "",
-    productImage: "",
-    productManufacturer: "",
-    productCondition: "",
-    productDiscount: "",
-    inventory: "",
-  });
-
-  useEffect(() => {
-    const fetchBestSellers = async () => {
-      try {
-        const response = await Axios.get("http://localhost:3002/bestsellers");
-        setBestSellers(response.data);
-        console.log("Products Fetched!");
-      } catch (error) {
-        console.error("Error fetching best sellers", error);
-      }
-    };
-
-    // Call the function to fetch best sellers
-    fetchBestSellers();
-  }, []);
-
+  const handlecartclick = () => {
+    navigate("/cart");
+  };
+  const { cartState } = useCart();
   return (
-    <div className="register-container">
-      <h2>Best Sellers</h2>
-      <div className="product-container">
-        {bestSellers.map((product) => (
-          <ProductCard key={product.Id} product={product} />
-        ))}
-      </div>
+    <div>
+      <nav className="navbar">
+        <ul>
+          <li>
+            <Link to="/login">Account</Link>
+          </li>
+          <li>
+            <Link to="/register">View Orders</Link>
+          </li>
+          <li>
+            <div className="cart">
+              <FaCartPlus onClick={handlecartclick} />
+              <span className="cart-count">{cartState.cartCount}</span>
+            </div>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 };
